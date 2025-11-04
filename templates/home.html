@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="jumbotron">
+    <h1 class="display-4">Welcome to Task Manager!</h1>
+    <p class="lead">A simple application to manage your project tasks efficiently.</p>
+    <hr class="my-4">
+    <p>Create tasks, track progress, and collaborate with your team.</p>
+
+    {% if user.is_authenticated %}
+    <a class="btn btn-success btn-lg" href="{% url 'task-list' %}" role="button">Go to My Tasks</a>
+    {% else %}
+    <a class="btn btn-primary btn-lg" href="{% url 'login' %}" role="button">Login to Get Started</a>
+    {% endif %}
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <h3>📋 Create Tasks</h3>
+        <p>Add new tasks with titles, descriptions, and status.</p>
+    </div>
+    <div class="col-md-4">
+        <h3>👁️ View All Tasks</h3>
+        <p>See tasks from everyone in your project.</p>
+    </div>
+    <div class="col-md-4">
+        <h3>🔍 Search Tasks</h3>
+        <p>Find tasks quickly by searching titles and descriptions.</p>
+    </div>
+</div>
+{% endblock %}

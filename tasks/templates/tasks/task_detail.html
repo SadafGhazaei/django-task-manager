@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h2>{{ task.title }}</h2>
+        <div>
+            {% if task.created_by == user %}
+            <a href="{% url 'task-update' task.id %}" class="btn btn-warning btn-sm">Edit</a>
+            <a href="{% url 'task-delete' task.id %}" class="btn btn-danger btn-sm">Delete</a>
+            {% endif %}
+            <a href="{% url 'task-list' %}" class="btn btn-secondary btn-sm">Back to List</a>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <p><strong>Status:</strong>
+                    <span class="badge 
+                        {% if task.status == 'todo' %}bg-secondary
+                        {% elif task.status == 'in_progress' %}bg-warning
+                        {% else %}bg-success{% endif %}">
+                        {{ task.get_status_display }}
+                    </span>
+                </p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Priority:</strong>
+                    <span class="badge 
+                        {% if task.priority == 'low' %}bg-info
+                        {% elif task.priority == 'medium' %}bg-warning
+                        {% elif task.priority == 'high' %}bg-danger
+                        {% else %}bg-secondary{% endif %}">
+                        {{ task.get_priority_display|default:"Not Set" }}
+                    </span>
+                </p>
+            </div>
+        </div>
+
+        {% if task.due_date %}
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <p><strong>Due Date:</strong> {{ task.due_date }}</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <p><strong>Description:</strong></p>
+        <div class="border p-3 bg-light rounded mb-3">
+            {{ task.description|linebreaks }}
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>Created by:</strong>
+                    {% if task.created_by == user %}
+                    <span class="text-primary">You</span>
+                    {% else %}
+                    {{ task.created_by.username }}
+                    {% endif %}
+                </p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Created at:</strong> {{ task.created_at|date:"M d, Y H:i" }}</p>
+                <p><strong>Last updated:</strong> {{ task.updated_at|date:"M d, Y H:i" }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
