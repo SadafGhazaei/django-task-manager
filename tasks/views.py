@@ -6,6 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from .forms import TaskForm  
 from rest_framework import generics, permissions
+from rest_framework.exceptions import PermissionDenied
 from .models import Task
 from .serializers import TaskSerializer
 from django.db.models import Q
@@ -34,6 +35,22 @@ class TaskDetailView(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         return Task.objects.all()
     
+    def get_object(self):
+        obj = super().get_object()
+        if self.request.method in ['PUT', 'PATCH', 'DELETE']:
+            if obj.created_by != self.request.user:
+                raise PermissionDenied("You can only modify your own tasks.")
+        return obj
+    
+    def perform_update(self, serializer):
+        if serializer.instance.created_by != self.request.user:
+            raise PermissionDenied("You can only update your own tasks.")
+        serializer.save()
+    
+    def perform_destroy(self, instance):
+        if instance.created_by != self.request.user:
+            raise PermissionDenied("You can only delete your own tasks.")
+        instance.delete()
 class TaskListView(LoginRequiredMixin, ListView):
     model = Task
     template_name = 'tasks/task_list.html'
